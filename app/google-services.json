@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "795814745039",
+    "project_id": "interactive-test-eaa98",
+    "storage_bucket": "interactive-test-eaa98.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:795814745039:android:e3416e74e50deaa29738ba",
+        "android_client_info": {
+          "package_name": "com.example.interactivetest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "795814745039-de6mmme2vs63dij3i0e1680l678j4sii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAm1lAhvdoiQd9fBbyZT2pQPSeqLLOAyMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "795814745039-de6mmme2vs63dij3i0e1680l678j4sii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
