@@ -12,6 +12,7 @@ import kotlin.collections.ArrayList
 
 class BookController() {
     private val TAG_BOOK = "TAGBOOK"
+    private val TAG_HISTORY = "TAGHISTORY"
 
     fun listBook(db: FirebaseFirestore, datas: ArrayList<Book>, adapter: BookAdapter, konteks: Context){
         db.collection("books")
@@ -42,7 +43,7 @@ class BookController() {
                     adapter.notifyDataSetChanged()
                 }
             }
-            .addOnFailureListener { e -> Log.w(TAG_BOOK, "Error adding document", e) }
+            .addOnFailureListener { e -> Log.w(TAG_HISTORY, "Error adding document", e) }
     }
 
     fun editBook(db: FirebaseFirestore, datas: ArrayList<Book>, adapter: BookAdapter, konteks: Context, id: String, username: String, bookName: String, author: String, is_booked: String, date_booked: String, date_booked_end: String, image: String, position: Int){
@@ -59,17 +60,17 @@ class BookController() {
                         "date_booked_end" to date_booked_end,
                         "image" to image
                     )
-                    db.collection("books")
+                    db.collection("history")
                         .add(history)
                         .addOnSuccessListener {
-                            Log.d(TAG_BOOK, "History successfully added")
+                            Log.d(TAG_HISTORY, "History successfully added")
                             datas[position] = Book(id, bookName, author, is_booked, date_booked, date_booked_end, image)
                             adapter.notifyDataSetChanged()
                         }
-                        .addOnFailureListener { e -> Log.w(TAG_BOOK, "Error adding document", e) }
+                        .addOnFailureListener { e -> Log.w(TAG_HISTORY, "Error adding document", e) }
                 }
             }
-        db. runTransaction { transaction ->
+        db.runTransaction { transaction ->
             val current = LocalDateTime.now()
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val formatted = current.format(formatter)
