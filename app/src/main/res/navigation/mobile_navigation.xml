@@ -16,6 +16,11 @@
         android:name="com.example.interactivetest.ui.history.HistoryFragment"
         android:label="@string/title_history"
         tools:layout="@layout/fragment_history" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.interactivetest.ui.notifications.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
 
     <!--<fragment
         android:id="@+id/navigation_notifications"

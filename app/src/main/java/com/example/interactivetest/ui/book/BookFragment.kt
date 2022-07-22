@@ -9,14 +9,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.interactivetest.adapters.BookAdapter
 import com.example.interactivetest.controllers.BookController
-import com.example.interactivetest.databinding.FragmentHomeBinding
+import com.example.interactivetest.databinding.FragmentBookBinding
 import com.example.interactivetest.models.Book
 import com.google.firebase.firestore.FirebaseFirestore
 import splitties.toast.toast
 
 class BookFragment : Fragment(), BookAdapter.OnBookClickListener {
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentBookBinding? = null
     private lateinit var books: ArrayList<Book>
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var adapter: BookAdapter
@@ -33,7 +33,7 @@ class BookFragment : Fragment(), BookAdapter.OnBookClickListener {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentBookBinding.inflate(inflater, container, false)
         val root: View = binding.root
         return root
     }

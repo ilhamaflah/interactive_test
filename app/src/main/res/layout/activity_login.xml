@@ -42,17 +42,20 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputPassword_1"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
+        app:boxBackgroundColor="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewSecure_"
         app:layout_constraintTop_toBottomOf="@+id/textInputUsername_1">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/textInputEditPassword_1"
+            style="@style/Theme.Interactivetest.TextInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
@@ -63,16 +66,19 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputUsername_1"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="60dp"
         android:layout_marginEnd="20dp"
+        app:boxBackgroundColor="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/imageView2">
 
         <com.google.android.material.textfield.TextInputEditText
+            style="@style/Theme.Interactivetest.TextInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username"

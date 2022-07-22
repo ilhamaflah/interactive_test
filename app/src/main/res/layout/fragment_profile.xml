@@ -23,7 +23,7 @@
             android:paddingVertical="16dp">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/menuProfileFavorite"
+                android:id="@+id/menuProfileUsername"
                 style="@style/Theme.Interactivetest.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,18 +40,13 @@
                     android:paddingVertical="8dp">
 
                     <TextView
+                        android:id="@+id/textUsername"
                         style="@style/TextAppearance.Interactivetest.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:text="Username: " />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_arrow_right" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -63,7 +58,7 @@
                 android:background="@color/grey_300" />
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/menuProfileNotification"
+                android:id="@+id/menuProfileLogout"
                 style="@style/Theme.Interactivetest.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,7 +80,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:text="Notification" />
+                        android:text="Logout" />
 
                     <ImageView
                         android:layout_width="wrap_content"

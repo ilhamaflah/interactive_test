@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.example.interactivetest.LoginActivity
+import com.example.interactivetest.controllers.localStorage
 import com.example.interactivetest.databinding.FragmentProfileBinding
+import splitties.fragments.start
 
 class ProfileFragment : Fragment() {
 
@@ -30,14 +33,16 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initView()
     }
 
     private fun initView(){
-
-    }
-
-    private fun loadData(){
-
+        binding.textUsername.text = localStorage("", requireContext()).USERNAME
+        binding.menuProfileLogout.setOnClickListener {
+            localStorage("", requireContext()).editLocalUser("")
+            requireActivity().finish()
+            start<LoginActivity>()
+        }
     }
 
     override fun onDestroyView() {

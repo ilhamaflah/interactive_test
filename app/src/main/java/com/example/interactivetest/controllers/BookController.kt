@@ -45,8 +45,30 @@ class BookController() {
             .addOnFailureListener { e -> Log.w(TAG_BOOK, "Error adding document", e) }
     }
 
-    fun editBook(db: FirebaseFirestore, datas: ArrayList<Book>, adapter: BookAdapter, konteks: Context, id: String, username: String){
+    fun editBook(db: FirebaseFirestore, datas: ArrayList<Book>, adapter: BookAdapter, konteks: Context, id: String, username: String, bookName: String, author: String, is_booked: String, date_booked: String, date_booked_end: String, image: String, position: Int){
         val idBook = db.collection("books").document(id)
+
+        db.collection("history").whereEqualTo("name", bookName).get()
+            .addOnSuccessListener { result ->
+                if(result.documents.size == 0){
+                    val history = hashMapOf(
+                        "name" to bookName,
+                        "author" to is_booked,
+                        "is_booked" to is_booked,
+                        "date_booked" to date_booked,
+                        "date_booked_end" to date_booked_end,
+                        "image" to image
+                    )
+                    db.collection("books")
+                        .add(history)
+                        .addOnSuccessListener {
+                            Log.d(TAG_BOOK, "History successfully added")
+                            datas[position] = Book(id, bookName, author, is_booked, date_booked, date_booked_end, image)
+                            adapter.notifyDataSetChanged()
+                        }
+                        .addOnFailureListener { e -> Log.w(TAG_BOOK, "Error adding document", e) }
+                }
+            }
         db. runTransaction { transaction ->
             val current = LocalDateTime.now()
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -54,7 +76,7 @@ class BookController() {
             transaction.update(idBook, "is_booked", username)
             transaction.update(idBook, "date_booked", formatted)
             transaction.update(idBook, "date_booked_end", formatted.plus(Calendar.getInstance().get(Calendar.DATE) + 3))
-        }.addOnSuccessListener { Log.d(TAG_BOOK, "Buku berhasil dipesan") }
-            .addOnFailureListener { e -> Log.d(TAG_BOOK, "Buku gagal dipesan: " + e) }
+        }.addOnSuccessListener { Log.d(TAG_BOOK, "Book successfully borrowed") }
+            .addOnFailureListener { e -> Log.d(TAG_BOOK, "Error borrowing book: " + e) }
     }
 }

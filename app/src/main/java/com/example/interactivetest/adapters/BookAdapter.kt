@@ -10,8 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.interactivetest.controllers.BookController
+import com.example.interactivetest.controllers.localStorage
 import com.example.interactivetest.databinding.MainItemBinding
 import com.example.interactivetest.models.Book
+import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import splitties.toast.toast
 import java.io.InputStream
@@ -21,13 +24,14 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
-class BookAdapter(val context: Context, val data: ArrayList<Book>, val listener: OnBookClickListener) : RecyclerView.Adapter<BookAdapter.BookHolder>() {
+class BookAdapter(val konteks: Context, val data: ArrayList<Book>, val listener: OnBookClickListener) : RecyclerView.Adapter<BookAdapter.BookHolder>() {
 
     interface OnBookClickListener {
         fun onCardBookClickListener(position: Int)
     }
 
     inner class BookHolder(private val binding: MainItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        val db = FirebaseFirestore.getInstance()
         init {
             binding.cardBook.setOnClickListener(this)
         }
@@ -38,11 +42,11 @@ class BookAdapter(val context: Context, val data: ArrayList<Book>, val listener:
 
         fun bind(data: Book) {
             var localDate: LocalDate? = null
-            if(data.date_booked != "") {
+            if(data.date_booked.isNotBlank()) {
                 localDate = LocalDate.parse(data.date_booked, DateTimeFormatter.ISO_DATE)
                 binding.borrowerLayout.visibility = View.VISIBLE
                 binding.borrower.text = data.is_booked
-                binding.dateBooked.text = "Date Booked: $localDate"
+                binding.dateBooked.text = "Booked: $localDate"
             }
             Picasso.get().load("{${data.image}}").into(binding.imageViewMain1)
             //DownloadImage(binding.imageViewMain1).execute(data.image)
@@ -51,7 +55,8 @@ class BookAdapter(val context: Context, val data: ArrayList<Book>, val listener:
             if(data.is_booked.isNotBlank()) binding.buttonBook.isEnabled = false
 
             binding.buttonBook.setOnClickListener {
-                listener.onCardBookClickListener(absoluteAdapterPosition)
+                BookController().editBook(db, this@BookAdapter.data, this@BookAdapter, konteks, data.id, localStorage("", konteks).USERNAME.toString(), data.name,
+                data.author, data.is_booked, data.date_booked, data.date_booked_end, data.image, absoluteAdapterPosition)
             }
         }
     }
