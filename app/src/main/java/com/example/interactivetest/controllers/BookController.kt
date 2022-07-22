@@ -53,6 +53,7 @@ class BookController() {
         db.collection("history").whereEqualTo("name", bookName).get()
             .addOnSuccessListener { result ->
                 if(result.documents.size == 0){
+                    Log.d(TAG_HISTORY, "History being added")
                     val history = hashMapOf(
                         "name" to bookName,
                         "author" to author,
@@ -63,8 +64,8 @@ class BookController() {
                     )
                     db.collection("history")
                         .add(history)
-                        .addOnSuccessListener {
-                            Log.d(TAG_HISTORY, "History successfully added")
+                        .addOnSuccessListener { document ->
+                            Log.d(TAG_HISTORY, "History successfully added $document")
                         }
                         .addOnFailureListener { e -> Log.w(TAG_HISTORY, "Error adding document", e) }
                 }

@@ -36,6 +36,7 @@ class LoginActivity : AppCompatActivity() {
                     toast("Selamat datang " + (result.documents.get(0).data?.get("name")))
                     Log.d("TAGLOGIN", result.documents.get(0).id + " => " + result.documents.get(0).data?.get("name"))
                     localStorage(result.documents.get(0).data?.get("name").toString(), this).editLocalUser(result.documents.get(0).data?.get("name").toString())
+                    finish()
                     start<MainActivity>()
                 }
             //db.whereEqualTo("password", binding.textInputPassword1.editText?.text.toString())
