@@ -28,6 +28,7 @@ class BookAdapter(val konteks: Context, val data: ArrayList<Book>, val listener:
 
     interface OnBookClickListener {
         fun onCardBookClickListener(position: Int)
+        fun onButtonBorrowClickListener(position: Int)
     }
 
     inner class BookHolder(private val binding: MainItemBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
@@ -40,23 +41,22 @@ class BookAdapter(val konteks: Context, val data: ArrayList<Book>, val listener:
             listener.onCardBookClickListener(absoluteAdapterPosition)
         }
 
-        fun bind(data: Book) {
+        fun bind(book: Book) {
             var localDate: LocalDate? = null
-            if(data.date_booked.isNotBlank()) {
-                localDate = LocalDate.parse(data.date_booked, DateTimeFormatter.ISO_DATE)
+            if(book.date_booked.isNotBlank()) {
+                localDate = LocalDate.parse(book.date_booked, DateTimeFormatter.ISO_DATE)
                 binding.borrowerLayout.visibility = View.VISIBLE
-                binding.borrower.text = data.is_booked
+                binding.borrower.text = book.is_booked
                 binding.dateBooked.text = "Booked: $localDate"
             }
-            Picasso.get().load("{${data.image}}").into(binding.imageViewMain1)
+            Picasso.get().load("{${book.image}}").into(binding.imageViewMain1)
             //DownloadImage(binding.imageViewMain1).execute(data.image)
-            binding.title1.text = data.name
-            binding.author.text = "Author: " + data.author
-            if(data.is_booked.isNotBlank()) binding.buttonBook.isEnabled = false
+            binding.title1.text = book.name
+            binding.author.text = "Author: " + book.author
+            if(book.is_booked.isNotBlank()) binding.buttonBook.isEnabled = false
 
             binding.buttonBook.setOnClickListener {
-                BookController().editBook(db, this@BookAdapter.data, this@BookAdapter, konteks, data.id, localStorage("", konteks).USERNAME.toString(), data.name,
-                data.author, data.is_booked, data.date_booked, data.date_booked_end, data.image, absoluteAdapterPosition)
+                listener.onButtonBorrowClickListener(absoluteAdapterPosition)
             }
         }
     }
@@ -71,7 +71,7 @@ class BookAdapter(val konteks: Context, val data: ArrayList<Book>, val listener:
 
     override fun getItemCount(): Int = data.size
 
-    private class DownloadImage(imageView: ImageView) : AsyncTask<String, Void, Bitmap>() {
+    /*private class DownloadImage(imageView: ImageView) : AsyncTask<String, Void, Bitmap>() {
         private var imageView = imageView
 
         override fun doInBackground(vararg params: String?): Bitmap {
@@ -91,5 +91,5 @@ class BookAdapter(val konteks: Context, val data: ArrayList<Book>, val listener:
             super.onPostExecute(result)
             imageView.setImageBitmap(result)
         }
-    }
+    }*/
 }

@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.interactivetest.controllers.BookController
 import com.example.interactivetest.databinding.ActivityMainBinding
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)*/
         navView.setupWithNavController(navController)
+        BookController().editBookBorrowEnd(FirebaseFirestore.getInstance())
 
         /*val db = FirebaseFirestore.getInstance()
         var books = hashMapOf(

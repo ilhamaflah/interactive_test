@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.interactivetest.adapters.BookAdapter
 import com.example.interactivetest.models.Book
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -19,7 +20,7 @@ class BookController() {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result){
-                    Log.d(TAG_BOOK, "${document.id} => ${document.data["image"].toString()}")
+                    Log.d(TAG_BOOK, "${document.id} => ${document.data}")
                     datas.add(
                         Book(document.id, document.data["name"].toString(), document.data["author"].toString(), document.data["is_booked"].toString(),
                             document.data["date_booked"].toString(), document.data["date_booked_end"].toString(), document.data["image"].toString())
@@ -35,7 +36,7 @@ class BookController() {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result){
-                    Log.d(TAG_BOOK, "${document.id} => ${document.data["image"].toString()}")
+                    Log.d(TAG_BOOK, "${document.id} => ${document.data}")
                     datas.add(
                         Book(document.id, document.data["name"].toString(), document.data["author"].toString(), document.data["is_booked"].toString(),
                             document.data["date_booked"].toString(), document.data["date_booked_end"].toString(), document.data["image"].toString())
@@ -54,7 +55,7 @@ class BookController() {
                 if(result.documents.size == 0){
                     val history = hashMapOf(
                         "name" to bookName,
-                        "author" to is_booked,
+                        "author" to author,
                         "is_booked" to is_booked,
                         "date_booked" to date_booked,
                         "date_booked_end" to date_booked_end,
@@ -64,20 +65,61 @@ class BookController() {
                         .add(history)
                         .addOnSuccessListener {
                             Log.d(TAG_HISTORY, "History successfully added")
-                            datas[position] = Book(id, bookName, author, is_booked, date_booked, date_booked_end, image)
-                            adapter.notifyDataSetChanged()
                         }
                         .addOnFailureListener { e -> Log.w(TAG_HISTORY, "Error adding document", e) }
                 }
             }
+
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formatted = current.format(formatter)
+
         db.runTransaction { transaction ->
-            val current = LocalDateTime.now()
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val formatted = current.format(formatter)
             transaction.update(idBook, "is_booked", username)
             transaction.update(idBook, "date_booked", formatted)
             transaction.update(idBook, "date_booked_end", formatted.plus(Calendar.getInstance().get(Calendar.DATE) + 3))
         }.addOnSuccessListener { Log.d(TAG_BOOK, "Book successfully borrowed") }
             .addOnFailureListener { e -> Log.d(TAG_BOOK, "Error borrowing book: " + e) }
+
+        datas[position] = Book(id, bookName, author, is_booked, formatted, formatted.plus(Calendar.getInstance().get(Calendar.DATE) + 3), image)
+        adapter.notifyDataSetChanged()
+    }
+
+    fun editBookBorrowEnd(db: FirebaseFirestore){
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val currentDate: Date = dateFormat.parse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) as Date
+
+        val idBook = db.collection("books")
+        db.collection("books").get()
+            .addOnSuccessListener { result ->
+                for(document in result){
+                    if(document.data["date_booked_end"].toString().isNotBlank()){
+                        if(currentDate.after(dateFormat.parse(document.data["date_booked_end"].toString().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) as Date)){
+                            db.runTransaction { transaction ->
+                                transaction.update(idBook.document(document.id), "is_booked", "")
+                                transaction.update(idBook.document(document.id), "date_booked", "")
+                                transaction.update(idBook.document(document.id), "date_booked_end", "")
+                            }.addOnSuccessListener { Log.d(TAG_BOOK, "Book successfully borrowed") }
+                                .addOnFailureListener { e -> Log.d(TAG_BOOK, "Error borrowing book: " + e) }
+                        }
+                    }
+                }
+            }
+        val idHistory = db.collection("history")
+        db.collection("history").get()
+            .addOnSuccessListener { result ->
+                for(document in result){
+                    if(document.data["date_booked_end"].toString().isNotBlank()){
+                        if(currentDate.after(dateFormat.parse(document.data["date_booked_end"].toString().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) as Date)){
+                            db.runTransaction { transaction ->
+                                transaction.update(idHistory.document(document.id), "is_booked", "")
+                                transaction.update(idHistory.document(document.id), "date_booked", "")
+                                transaction.update(idHistory.document(document.id), "date_booked_end", "")
+                            }.addOnSuccessListener { Log.d(TAG_HISTORY, "Book successfully borrowed") }
+                                .addOnFailureListener { e -> Log.d(TAG_HISTORY, "Error borrowing book: " + e) }
+                        }
+                    }
+                }
+            }
     }
 }

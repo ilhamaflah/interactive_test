@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.interactivetest.adapters.BookAdapter
 import com.example.interactivetest.controllers.BookController
+import com.example.interactivetest.controllers.localStorage
 import com.example.interactivetest.databinding.FragmentBookBinding
 import com.example.interactivetest.models.Book
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,6 +23,7 @@ class BookFragment : Fragment(), BookAdapter.OnBookClickListener {
     private lateinit var adapter: BookAdapter
     private val TAG_BOOK = "TAGBOOK"
     private val db = FirebaseFirestore.getInstance()
+    private var globalPosition: Int? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -76,6 +78,11 @@ class BookFragment : Fragment(), BookAdapter.OnBookClickListener {
                 }
             }
             .addOnFailureListener { e -> Log.w(TAG_BOOK, "Error adding document", e) }*/
+        /*db.collection("books").document("z66lwrB8M49aKt8Cn7ot")
+            .delete()
+            .addOnSuccessListener {  }
+            .addOnFailureListener {  }*/
+        BookController().editBookBorrowEnd(FirebaseFirestore.getInstance())
     }
 
     private fun loadData(){
@@ -90,5 +97,10 @@ class BookFragment : Fragment(), BookAdapter.OnBookClickListener {
     override fun onCardBookClickListener(position: Int) {
         //globalPosition = position
         toast(books[position].name)
+    }
+
+    override fun onButtonBorrowClickListener(position: Int) {
+        BookController().editBook(db, books, adapter, requireContext(), books[position].id, localStorage("", requireContext()).USERNAME.toString(), books[position].name,
+            books[position].author, books[position].is_booked, books[position].date_booked, books[position].date_booked_end, books[position].image, position)
     }
 }

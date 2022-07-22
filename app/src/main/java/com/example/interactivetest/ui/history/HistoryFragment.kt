@@ -92,4 +92,9 @@ class HistoryFragment : Fragment(), BookAdapter.OnBookClickListener {
         //globalPosition = position
         toast(books[position].name)
     }
+
+    override fun onButtonBorrowClickListener(position: Int) {
+        BookController().editBook(db, books, adapter, requireContext(), books[position].id, localStorage("", requireContext()).USERNAME.toString(), books[position].name,
+            books[position].author, books[position].is_booked, books[position].date_booked, books[position].date_booked_end, books[position].image, position)
+    }
 }
