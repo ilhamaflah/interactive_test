@@ -14,6 +14,11 @@ import com.example.interactivetest.databinding.FragmentBookBinding
 import com.example.interactivetest.models.Book
 import com.google.firebase.firestore.FirebaseFirestore
 import splitties.toast.toast
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class BookFragment : Fragment(), BookAdapter.OnBookClickListener {
 
@@ -100,7 +105,14 @@ class BookFragment : Fragment(), BookAdapter.OnBookClickListener {
     }
 
     override fun onButtonBorrowClickListener(position: Int) {
+        val current = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formatted = current.format(formatter)
+        val sdf = SimpleDateFormat("yyyy-MM-dd")
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.DAY_OF_MONTH, 3)
+        val dateAfter = sdf.format(cal.time)
         BookController().editBook(db, books, adapter, requireContext(), books[position].id, localStorage("", requireContext()).USERNAME.toString(), books[position].name,
-            books[position].author, books[position].is_booked, books[position].date_booked, books[position].date_booked_end, books[position].image, position)
+            books[position].author, localStorage("", requireContext()).USERNAME.toString(), formatted, dateAfter, books[position].image, position)
     }
 }

@@ -42,9 +42,10 @@ class BookAdapter(val konteks: Context, val data: ArrayList<Book>, val listener:
         }
 
         fun bind(book: Book) {
-            var localDate: LocalDate? = null
+            var localDate: String? = null
             if(book.date_booked.isNotBlank()) {
-                localDate = LocalDate.parse(book.date_booked, DateTimeFormatter.ISO_DATE)
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                localDate = book.date_booked.format(formatter)
                 binding.borrowerLayout.visibility = View.VISIBLE
                 binding.borrower.text = book.is_booked
                 binding.dateBooked.text = "Booked: $localDate"

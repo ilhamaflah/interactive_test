@@ -49,7 +49,7 @@ class BookController() {
 
     fun editBook(db: FirebaseFirestore, datas: ArrayList<Book>, adapter: BookAdapter, konteks: Context, id: String, username: String, bookName: String, author: String, is_booked: String, date_booked: String, date_booked_end: String, image: String, position: Int){
         val idBook = db.collection("books").document(id)
-
+        Log.d("EDITBOOK", is_booked)
         db.collection("history").whereEqualTo("name", bookName).get()
             .addOnSuccessListener { result ->
                 if(result.documents.size == 0){
@@ -57,7 +57,7 @@ class BookController() {
                     val history = hashMapOf(
                         "name" to bookName,
                         "author" to author,
-                        "is_booked" to is_booked,
+                        "is_booked" to username,
                         "date_booked" to date_booked,
                         "date_booked_end" to date_booked_end,
                         "image" to image
@@ -66,36 +66,38 @@ class BookController() {
                         .add(history)
                         .addOnSuccessListener { document ->
                             Log.d(TAG_HISTORY, "History successfully added $document")
+                            val current = LocalDateTime.now()
+                            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                            val formatted = current.format(formatter)
+
+                            db.runTransaction { transaction ->
+                                transaction.update(idBook, "is_booked", username)
+                                transaction.update(idBook, "date_booked", date_booked)
+                                transaction.update(idBook, "date_booked_end", date_booked_end)
+                            }.addOnSuccessListener { Log.d(TAG_BOOK, "Book successfully borrowed") }
+                                .addOnFailureListener { e -> Log.d(TAG_BOOK, "Error borrowing book: $e") }
+
+                            datas[position] = Book(id, bookName, author, is_booked, formatted, date_booked_end, image)
+                            adapter.notifyDataSetChanged()
                         }
                         .addOnFailureListener { e -> Log.w(TAG_HISTORY, "Error adding document", e) }
                 }
             }
-
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formatted = current.format(formatter)
-
-        db.runTransaction { transaction ->
-            transaction.update(idBook, "is_booked", username)
-            transaction.update(idBook, "date_booked", formatted)
-            transaction.update(idBook, "date_booked_end", formatted.plus(Calendar.getInstance().get(Calendar.DATE) + 3))
-        }.addOnSuccessListener { Log.d(TAG_BOOK, "Book successfully borrowed") }
-            .addOnFailureListener { e -> Log.d(TAG_BOOK, "Error borrowing book: " + e) }
-
-        datas[position] = Book(id, bookName, author, is_booked, formatted, formatted.plus(Calendar.getInstance().get(Calendar.DATE) + 3), image)
-        adapter.notifyDataSetChanged()
     }
 
     fun editBookBorrowEnd(db: FirebaseFirestore){
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-        val currentDate: Date = dateFormat.parse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) as Date
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        //val currentDate: Date = dateFormat.parse(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+        //val currentDate: Date = LocalDateTime.now().format(formatter)
 
         val idBook = db.collection("books")
         db.collection("books").get()
             .addOnSuccessListener { result ->
                 for(document in result){
+                    val secondD = document.data["date_booked_end"].toString().format(formatter)
                     if(document.data["date_booked_end"].toString().isNotBlank()){
-                        if(currentDate.after(dateFormat.parse(document.data["date_booked_end"].toString().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) as Date)){
+                        //currentDate.compareTo(dateFormat.parse(document.data["date_booked_end"].toString().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))))
+                        if(LocalDateTime.now().format(formatter) > secondD){
                             db.runTransaction { transaction ->
                                 transaction.update(idBook.document(document.id), "is_booked", "")
                                 transaction.update(idBook.document(document.id), "date_booked", "")
@@ -110,8 +112,9 @@ class BookController() {
         db.collection("history").get()
             .addOnSuccessListener { result ->
                 for(document in result){
+                    val secondD = document.data["date_booked_end"].toString().format(formatter)
                     if(document.data["date_booked_end"].toString().isNotBlank()){
-                        if(currentDate.after(dateFormat.parse(document.data["date_booked_end"].toString().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))) as Date)){
+                        if(LocalDateTime.now().format(formatter) > secondD){
                             db.runTransaction { transaction ->
                                 transaction.update(idHistory.document(document.id), "is_booked", "")
                                 transaction.update(idHistory.document(document.id), "date_booked", "")
