@@ -61,6 +61,7 @@ class LoginActivity : AppCompatActivity() {
             binding.textInputPassword1.requestFocus()
         }
         if(localStorage("", this).USERNAME != ""){
+            finish()
             start<MainActivity>()
         }
     }
